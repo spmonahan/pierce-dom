@@ -1,0 +1,29 @@
+{
+  "name": "treewalker",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/treewalker/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/treewalker",
+        "main": "packages/treewalker/src/index.ts",
+        "tsConfig": "packages/treewalker/tsconfig.lib.json",
+        "assets": ["packages/treewalker/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/treewalker/**/*.ts",
+          "packages/treewalker/package.json"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
