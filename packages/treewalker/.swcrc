@@ -1,21 +1,19 @@
 {
+  "$schema": "https://json.schemastore.org/swcrc",
   "jsc": {
-    "target": "es2017",
+    "target": "es2019",
     "parser": {
       "syntax": "typescript",
-      "decorators": true,
-      "dynamicImport": true
-    },
-    "transform": {
-      "decoratorMetadata": true,
-      "legacyDecorator": true
+      "tsx": false,
+      "decorators": false,
+      "dynamicImport": false
     },
     "keepClassNames": true,
-    "externalHelpers": true,
+    "externalHelpers": false,
     "loose": true
   },
   "module": {
-    "type": "commonjs"
+    "type": "es6"
   },
   "sourceMaps": true,
   "exclude": [

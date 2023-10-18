@@ -5,13 +5,14 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:swc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
       "options": {
-        "outputPath": "dist/packages/treewalker",
-        "main": "packages/treewalker/src/index.ts",
-        "tsConfig": "packages/treewalker/tsconfig.lib.json",
-        "assets": ["packages/treewalker/*.md"]
+        "cwd": "packages/treewalker",
+        "commands": [
+          { "command": "swc src --out-dir=lib --config module.type=es6" }
+        ],
+        "parallel": false
       }
     },
     "lint": {

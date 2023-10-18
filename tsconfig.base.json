@@ -2,22 +2,25 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDir": ".",
+    "noUnusedLocals": true,
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es2019",
     "module": "esnext",
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "pretty": true,
     "paths": {
-      "packages/treewalker": ["packages/treewalker/src/index.ts"],
-      "treewalker": ["treewalker/src/index.ts"]
-    }
+      "@pierce-dom/treewalker": ["packages/treewalker/src/index.ts"]
+    },
+    "typeRoots": ["node_modules/@types", "./typings"]
   },
   "exclude": ["node_modules", "tmp"]
 }

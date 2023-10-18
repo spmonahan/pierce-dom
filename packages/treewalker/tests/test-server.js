@@ -1,8 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-const express = require("express");
-const { join } = require("path");
+import express from "express";
+import { join, dirname } from "path";
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));;
 
 
 let server;
@@ -25,8 +28,10 @@ const handleGracefulShutdown = arg => {
 const startServer = (g) => {
     const app = express();
 
+    app.use("/src", express.static(join(__dirname, "..", "lib")));
     app.use("/pages", express.static(join(__dirname, "pages")));
     app.use("/webcomponents", express.static(join(__dirname, "webcomponents")));
+    app.use("/js", express.static(join(__dirname, "js")));
     
     process.on('uncaughtException', handleGracefulShutdown);
 

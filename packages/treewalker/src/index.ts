@@ -1,1 +1,1 @@
-export * from './lib/packages/treewalker';
+export { ShadowDomTreeWalker } from './ShadowDomTreeWalker.js';

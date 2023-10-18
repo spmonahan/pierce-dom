@@ -7,11 +7,12 @@ export interface TreeWalkerWithShadowDom extends TreeWalker {
   __isShadowRoot__?: boolean;
 }
 
-export class ShadowDOMTreeWalker implements TreeWalker {
+export class ShadowDomTreeWalker implements TreeWalker {
   public readonly filter: NodeFilter | null = null;
   public readonly root: Node;
   public readonly whatToShow: number;
 
+  private _rootHasShadow: boolean;
   private _document: Document;
   private _walkers: TreeWalkerWithShadowDom[] = [];
   private _currentWalker: TreeWalkerWithShadowDom;
@@ -26,6 +27,7 @@ export class ShadowDOMTreeWalker implements TreeWalker {
     this.root = root;
     this.filter = filter ?? null;
     this.whatToShow = whatToShow ?? NodeFilter.SHOW_ALL;
+    this._rootHasShadow = this._hasShadowRoot(root);
 
     this._currentWalker = this._pushWalker(root);
   }
@@ -50,7 +52,7 @@ export class ShadowDOMTreeWalker implements TreeWalker {
     this._maybeHandleShadowRoot();
 
     const next = this._currentWalker.nextNode();
-    if (next === null && this._walkerIsInShadowRoot()) {
+    if (next === null && this._walkerIsInShadowRoot() && !this._atRootShadowWalker()) {
       this._popWalker();
       return this._currentWalker.nextNode();
     }
@@ -127,5 +129,9 @@ export class ShadowDOMTreeWalker implements TreeWalker {
 
   private _walkerIsInShadowRoot(): boolean {
     return this._currentWalker.__isShadowRoot__ === true;
+  }
+
+  private _atRootShadowWalker(): boolean {
+    return this._rootHasShadow && this._walkers.length === 2;
   }
 }
