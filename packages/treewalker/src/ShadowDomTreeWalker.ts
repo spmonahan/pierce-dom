@@ -3,9 +3,10 @@
  * Licensed under the MIT License.
  */
 
-export interface TreeWalkerWithShadowDom extends TreeWalker {
-  __isShadowRoot__?: boolean;
-}
+import { createTreeWalker, hasShadowRoot, hasSlottedChildren, maybeHandleShadowRootOrSlot } from "./utils.js";
+import type { TreeWalkerWithType } from "./types.js";
+import { SlotTreeWalker } from "./SlotTreeWalker.js";
+
 
 export class ShadowDomTreeWalker implements TreeWalker {
   public readonly filter: NodeFilter | null = null;
@@ -14,8 +15,8 @@ export class ShadowDomTreeWalker implements TreeWalker {
 
   private _rootHasShadow: boolean;
   private _document: Document;
-  private _walkers: TreeWalkerWithShadowDom[] = [];
-  private _currentWalker: TreeWalkerWithShadowDom;
+  private _walkers: TreeWalkerWithType[] = [];
+  private _currentWalker: TreeWalkerWithType;
 
   constructor(
     root: Node,
@@ -27,7 +28,7 @@ export class ShadowDomTreeWalker implements TreeWalker {
     this.root = root;
     this.filter = filter ?? null;
     this.whatToShow = whatToShow ?? NodeFilter.SHOW_ALL;
-    this._rootHasShadow = this._hasShadowRoot(root);
+    this._rootHasShadow = hasShadowRoot(root);
 
     this._currentWalker = this._pushWalker(root);
   }
@@ -37,24 +38,29 @@ export class ShadowDomTreeWalker implements TreeWalker {
   }
 
   public firstChild(): Node | null {
-    this._maybeHandleShadowRoot();
+    this._maybeHandleShadowRootOrSlot();
 
     return this._currentWalker.firstChild();
   }
 
   public lastChild(): Node | null {
-    this._maybeHandleShadowRoot();
+    const current = this.currentNode;
+    this._currentWalker.lastChild();
+
+    if (!this._maybeHandleShadowRootOrSlot()) {
+      this._currentWalker.currentNode = current;
+    }
 
     return this._currentWalker.lastChild();
   }
 
   public nextNode(): Node | null {
-    this._maybeHandleShadowRoot();
+    this._maybeHandleShadowRootOrSlot();
 
-    const next = this._currentWalker.nextNode();
-    if (next === null && this._walkerIsInShadowRoot() && !this._atRootShadowWalker()) {
+    let next = this._currentWalker.nextNode();
+    while (next === null && this._walkerIsInShadowRootOrSlot() && !this._atRootShadowWalker()) {
       this._popWalker();
-      return this._currentWalker.nextNode();
+      next = this._currentWalker.nextNode();
     }
 
     return next;
@@ -67,7 +73,7 @@ export class ShadowDomTreeWalker implements TreeWalker {
 
   public parentNode(): Node | null {
     const parent = this._currentWalker.parentNode();
-    if (!parent && this._walkerIsInShadowRoot()) {
+    if (!parent && this._walkerIsInShadowRootOrSlot()) {
       this._popWalker();
       return this.currentNode;
     }
@@ -76,62 +82,97 @@ export class ShadowDomTreeWalker implements TreeWalker {
   }
 
   public previousNode(): Node | null {
-    if (this._hasShadowRoot(this.currentNode)) {
+    let inSlot = this._currentWalker.__inSlot__;
+    if (this._walkerIsInShadowRootOrSlot() && !this._atRootShadowWalker()) {
       this._popWalker();
+      inSlot = false;
     }
 
-    return this._currentWalker.previousNode();
+    const current = this.currentNode;
+    const prev = this._currentWalker.previousNode();
+    if (prev && hasSlottedChildren(prev) && !this._currentWalker.__inSlot__) {
+      this._currentWalker.currentNode = current;
+      this._currentWalker.__inSlot__ = true;
+      this._maybeHandleShadowRootOrSlot(prev);
+      const lastChild = this._currentWalker.lastChild();
+      return lastChild;
+    }
+
+    this._currentWalker.__inSlot__ = inSlot;
+
+    return prev;
   }
 
   public previousSibling(): Node | null {
     return this._currentWalker.previousSibling();
   }
 
-  private _maybeHandleShadowRoot(): boolean {
-    if (this._hasShadowRoot(this.currentNode)) {
-      const shadowRoot = (this.currentNode as HTMLElement).shadowRoot;
-      if (shadowRoot?.firstChild) {
-        this._pushWalker(shadowRoot, true);
-        return true;
-      }
+  private _maybeHandleShadowRootOrSlot(node?: Node): boolean {
+    const res = maybeHandleShadowRootOrSlot(node ?? this.currentNode);
+    if (res.type !== 'light') {
+      this._pushWalker(res.node, res.type);
+      return true;
     }
 
-    return false;
+    return false
   }
 
   private _pushWalker(
     root: Node,
-    isShadow = false
-  ): TreeWalkerWithShadowDom {
-    const walker: TreeWalkerWithShadowDom = this._document.createTreeWalker(
-      root,
-      this.whatToShow,
-      this.filter
-    );
+    type: 'shadow' | 'slot' | 'light' = 'light'
+  ): TreeWalkerWithType {
 
-    walker.__isShadowRoot__ = isShadow;
+    const walker = this._createTreeWalker(type, root);
+
     this._walkers.push(walker);
     this._currentWalker = walker;
 
     return this._currentWalker;
   }
 
-  private _popWalker(): TreeWalkerWithShadowDom {
+  private _popWalker(): TreeWalkerWithType {
     this._walkers.pop();
     this._currentWalker = this._walkers[this._walkers.length - 1];
 
     return this._currentWalker;
   }
 
-  private _hasShadowRoot(node: Node): boolean {
-    return (node as HTMLElement).shadowRoot !== null;
-  }
-
-  private _walkerIsInShadowRoot(): boolean {
-    return this._currentWalker.__isShadowRoot__ === true;
+  private _walkerIsInShadowRootOrSlot(): boolean {
+    return this._currentWalker.__type__ === 'shadow' || this._currentWalker.__type__ === 'slot';
   }
 
   private _atRootShadowWalker(): boolean {
     return this._rootHasShadow && this._walkers.length === 2;
+  }
+
+  private _createTreeWalker(type: 'shadow' | 'slot' | 'light', root: Node) {
+
+    let walker: TreeWalkerWithType;
+    if (type === 'slot') {
+      walker = new SlotTreeWalker(root, this.whatToShow, this.filter);
+    } else {
+      walker = this._document.createTreeWalker(root, this.whatToShow, this._filterWithSlotHandling.bind(this));
+    }
+  
+    walker.__type__ = type;
+    walker.__inSlot__ = false;
+  
+    return walker;
+  }
+
+  // Any slotted node outside of a SlotTreeWalker should be
+  // ignored
+  private _filterWithSlotHandling(node: Node): number {
+    if ((node as HTMLElement)?.assignedSlot) {
+      return NodeFilter.FILTER_REJECT;
+    }
+
+    if (typeof this.filter === 'function') {
+      return this.filter(node);
+    } else if (this.filter?.acceptNode) {
+      return this.filter.acceptNode(node);
+    }
+
+    return NodeFilter.FILTER_ACCEPT;
   }
 }

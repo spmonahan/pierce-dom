@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const BASIC_TEST_PAGE = 'http://localhost:3000/pages/basic.html';
+const DEFAULT_SLOT_TEST_PAGE = 'http://localhost:3000/pages/default-slot.html';
 
 const execTest = async <T>(page, testName: string): T => {
 
@@ -12,9 +12,9 @@ const execTest = async <T>(page, testName: string): T => {
 
 };
 
-test.describe('basic custom element', () => {
+test.describe('default slot custom element', () => {
   test('simple walk', async ({ page }) => {
-    await page.goto(BASIC_TEST_PAGE);
+    await page.goto(DEFAULT_SLOT_TEST_PAGE);
   
     const walkResult = await execTest(page, "walk");
   
@@ -23,9 +23,11 @@ test.describe('basic custom element', () => {
       "test-root",
       "first",
       "second",
-      "basic-first-child",
-      "basic-second-child",
-      "basic-last-child",
+      "default-slot-first-child",
+      "default-slot-second-child",
+      "slot",
+      "slotted",
+      "default-slot-last-child",
       "last",
       "test-script"
     ]);
@@ -34,68 +36,74 @@ test.describe('basic custom element', () => {
   test.describe('shadow root', () => {
   
     test('first child', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
+      await page.goto(DEFAULT_SLOT_TEST_PAGE);
   
       const walkResult = await execTest(page, "shadowFirstChild");
   
       expect(walkResult).toEqual([
         "second",
-        "basic-first-child"
+        "default-slot-first-child"
       ]);
     });
   
     test('last child', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
+      await page.goto(DEFAULT_SLOT_TEST_PAGE);
   
       const walkResult = await execTest(page, "shadowLastChild");
   
       expect(walkResult).toEqual([
         "second",
-        "basic-last-child"
+        "default-slot-last-child"
       ]);
     });
   
     test('parent node', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
+      await page.goto(DEFAULT_SLOT_TEST_PAGE);
   
       const walkResult = await execTest(page, "shadowParentNode");
   
       expect(walkResult).toEqual([
         "second",
-        "basic-last-child",
+        "default-slot-last-child",
         "second"
       ]);
     });
   
     test('siblings', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
+      await page.goto(DEFAULT_SLOT_TEST_PAGE);
   
       const walkResult = await execTest(page, "shadowSiblings");
   
       expect(walkResult).toEqual([
         "second",
-        "basic-first-child",
-        "basic-second-child",
-        "basic-last-child",
+        "default-slot-first-child",
+        "default-slot-second-child",
+        "slot",
+        "default-slot-last-child",
         null,
-        "basic-second-child",
-        "basic-first-child",
+        "slot",
+        "default-slot-second-child",
+        "default-slot-first-child",
         null
       ]);
     });
   
     test('next and previous node', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
+      await page.goto(DEFAULT_SLOT_TEST_PAGE);
   
       const walkResult = await execTest(page, "shadowNextPrev");
   
       expect(walkResult).toEqual([
         "second",
-        "basic-first-child",
-        "basic-second-child",
-        "basic-last-child",
-        "basic-second-child",
-        "basic-first-child",
+        "default-slot-first-child",
+        "default-slot-second-child",
+        "slot",
+        "slotted",
+        "default-slot-last-child",
+        "slotted",
+        "slot",
+        "default-slot-second-child",
+        "default-slot-first-child",
       ]);
     });
   
