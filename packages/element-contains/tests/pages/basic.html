@@ -13,125 +13,92 @@
     </div>
 
     <script type="module" id="test-script">
-      import { ShadowDomTreeWalker } from '/src/index.js';
+      import { elementContains } from '/src/index.js';
       import { addTest } from "/js/utils.js";
 
-      const walk = () => {
-        const walker = new ShadowDomTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
-        
-        let node = walker.currentNode;
-        const nodeIds = [];
-        while (node) {
-          nodeIds.push(node.id);
-          node = walker.nextNode();
-        }
+      const body = document.getElementById("body");
+      const testRoot = document.getElementById("test-root");
+      const first = document.getElementById("first");
+      const second = document.getElementById("second");
+      const last = document.getElementById("last");
 
-        return nodeIds;
+      const basicFirstChild = second.shadowRoot.getElementById("basic-first-child");
+      const basicSecondChild = second.shadowRoot.getElementById("basic-second-child");
+      const basicLastChild = second.shadowRoot.getElementById("basic-last-child");
+
+      const lightDomContains = () => {
+        
+        return [
+          elementContains(body, testRoot),
+          elementContains(body, first),
+          elementContains(body, second),
+          elementContains(body, last),
+
+          elementContains(testRoot, first),
+          elementContains(testRoot, second),
+          elementContains(testRoot, last),
+
+          elementContains(body, body),
+          elementContains(testRoot, testRoot),
+          elementContains(first, first),
+          elementContains(second, second),
+        ];
       };
 
-      addTest("walk", walk);
+      addTest("lightDomContains", lightDomContains);
 
-      const shadowFirstChild = () => {
-        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+      const lightDomNotContains = () => {
         
-        let node = walker.currentNode;
-        const nodeIds = [ node.id ];
-        
-        node = walker.firstChild();
-        nodeIds.push(node.id);
+        return [
+          elementContains(testRoot, body),
+          
+          elementContains(first, body),
+          elementContains(second, body),
 
-        return nodeIds;
+          elementContains(first, testRoot),
+          elementContains(second, testRoot),
+
+          elementContains(null, first),
+          elementContains(undefined, second),
+
+          elementContains(body, null),
+          elementContains(testRoot, undefined),
+        ];
       };
 
-      addTest("shadowFirstChild", shadowFirstChild);
+      addTest("lightDomNotContains", lightDomNotContains);
 
-      const shadowLastChild = () => {
-        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+      const shadowDomContains = () => {
         
-        let node = walker.currentNode;
-        const nodeIds = [ node.id ];
-        
-        node = walker.lastChild();
-        nodeIds.push(node.id);
+        return [
+          elementContains(body, basicFirstChild),
+          elementContains(testRoot, basicSecondChild),
 
-        return nodeIds;
+          elementContains(second, basicFirstChild),
+          elementContains(second, basicSecondChild),
+          elementContains(second, basicLastChild),
+
+          elementContains(basicFirstChild, basicFirstChild),
+          elementContains(basicSecondChild, basicSecondChild),
+          elementContains(basicLastChild, basicLastChild),
+        ];
       };
 
-      addTest("shadowLastChild", shadowLastChild);
+      addTest('shadowDomContains', shadowDomContains);
 
-      const shadowParentNode = () => {
-        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-        
-        let node = walker.currentNode;
-        const nodeIds = [ node.id ];
-        
-        node = walker.lastChild();
-        nodeIds.push(node.id);
+      const shadowDomNotContains = () => {
 
-        node = walker.parentNode();
-        nodeIds.push(node.id);
+        return [
+          elementContains(basicFirstChild, body),
+          elementContains(basicSecondChild, testRoot),
 
-        return nodeIds;
+          elementContains(basicFirstChild, second),
+          elementContains(basicSecondChild, second),
+          elementContains(basicLastChild, second),
+        ]
       };
 
-      addTest("shadowParentNode", shadowParentNode);
-
-      const shadowSiblings = () => {
-        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-        
-        let node = walker.currentNode;
-        const nodeIds = [ node.id ];
-        
-        node = walker.firstChild();
-        nodeIds.push(node.id);
-
-        node = walker.nextSibling();
-        nodeIds.push(node.id);
-        node = walker.nextSibling();
-        nodeIds.push(node.id);
-
-        // null
-        node = walker.nextSibling();
-        nodeIds.push(node ? node.id : null);
-
-        node = walker.previousSibling();
-        nodeIds.push(node.id);
-        node = walker.previousSibling();
-        nodeIds.push(node.id);
-
-        // null
-        node = walker.previousSibling();
-        nodeIds.push(node ? node.id : null);
-
-        return nodeIds;
-      };
-
-      addTest("shadowSiblings", shadowSiblings);
-
-      const shadowNextPrev = () => {
-        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-        
-        let node = walker.currentNode;
-        const nodeIds = [];
-        
-        while (node) {
-          nodeIds.push(node.id);
-          node = walker.nextNode();
-        }
-
-        console.log('nodeIds', nodeIds);
-        console.log('node?', walker.currentNode);
-
-        node = walker.previousNode();
-        while (node) {
-          nodeIds.push(node.id);
-          node = walker.previousNode();
-        }
-
-        return nodeIds;
-      };
-
-      addTest("shadowNextPrev", shadowNextPrev);
+      addTest('shadowDomNotContains', shadowDomNotContains);
 
     </script>
   </body>

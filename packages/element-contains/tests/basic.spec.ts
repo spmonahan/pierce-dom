@@ -5,99 +5,59 @@ const BASIC_TEST_PAGE = 'http://localhost:3000/pages/basic.html';
 const execTest = async <T>(page, testName: string): T => {
 
   const result = await page.evaluate((testName: string) => {
-    return window.__pierce_dom__.ShadowDomTreeWalker[testName]();
+    return window.__pierce_dom__.elementContains[testName]();
   }, testName);
 
   return result as T;
 
 };
 
+const genResult = (num, value) => {
+  return new Array(num).fill(value);
+}
+
+
 test.describe('basic custom element', () => {
-  test('simple walk', async ({ page }) => {
-    await page.goto(BASIC_TEST_PAGE);
   
-    const walkResult = await execTest(page, "walk");
-  
-    expect(walkResult).toEqual([
-      "body",
-      "test-root",
-      "first",
-      "second",
-      "basic-first-child",
-      "basic-second-child",
-      "basic-last-child",
-      "last",
-      "test-script"
-    ]);
+  test.describe('light dom', () => {
+    test('contains', async ({ page }) => {
+     
+        await page.goto(BASIC_TEST_PAGE);
+
+        const result = await execTest(page, "lightDomContains");
+
+        expect(result).toEqual(genResult(11, true));
+
+    });
+
+    test('does not contain', async ({ page }) => {
+     
+      await page.goto(BASIC_TEST_PAGE);
+
+      const result = await execTest(page, "lightDomNotContains");
+
+      expect(result).toEqual(genResult(9, false));
+
+    });
   });
-  
-  test.describe('shadow root', () => {
-  
-    test('first child', async ({ page }) => {
+
+  test.describe('shadow dom', () => {
+    test('contains', async ({ page }) => {
+     
       await page.goto(BASIC_TEST_PAGE);
-  
-      const walkResult = await execTest(page, "shadowFirstChild");
-  
-      expect(walkResult).toEqual([
-        "second",
-        "basic-first-child"
-      ]);
+
+      const result = await execTest(page, "shadowDomContains");
+
+      expect(result).toEqual(genResult(8, true));
     });
-  
-    test('last child', async ({ page }) => {
+
+    test('does not contain', async ({ page }) => {
+     
       await page.goto(BASIC_TEST_PAGE);
-  
-      const walkResult = await execTest(page, "shadowLastChild");
-  
-      expect(walkResult).toEqual([
-        "second",
-        "basic-last-child"
-      ]);
+
+      const result = await execTest(page, "shadowDomNotContains");
+
+      expect(result).toEqual(genResult(5, false));
     });
-  
-    test('parent node', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
-  
-      const walkResult = await execTest(page, "shadowParentNode");
-  
-      expect(walkResult).toEqual([
-        "second",
-        "basic-last-child",
-        "second"
-      ]);
-    });
-  
-    test('siblings', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
-  
-      const walkResult = await execTest(page, "shadowSiblings");
-  
-      expect(walkResult).toEqual([
-        "second",
-        "basic-first-child",
-        "basic-second-child",
-        "basic-last-child",
-        null,
-        "basic-second-child",
-        "basic-first-child",
-        null
-      ]);
-    });
-  
-    test('next and previous node', async ({ page }) => {
-      await page.goto(BASIC_TEST_PAGE);
-  
-      const walkResult = await execTest(page, "shadowNextPrev");
-  
-      expect(walkResult).toEqual([
-        "second",
-        "basic-first-child",
-        "basic-second-child",
-        "basic-last-child",
-        "basic-second-child",
-        "basic-first-child",
-      ]);
-    });
-  
   });
 })
