@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Default slot shadow DOM test</title>
+    <script type="module" src="/webcomponents/DefaultSlotComponent.js"></script>
+  </head>
+
+  <body id="body">
+    <div id="test-root">
+      <div id="first">First</div>
+      <default-slot-component id="second">
+        <div id="slotted">Slotted</div>
+      </default-slot-component>
+      <div id="last">Last</div>
+    </div>
+
+    <script type="module" id="test-script">
+      import { ShadowDomTreeWalker } from '/src/index.js';
+      import { addTest } from "/js/utils.js";
+
+      const walk = () => {
+        const walker = new ShadowDomTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+        
+        let node = walker.currentNode;
+        const nodeIds = [];
+        while (node) {
+          nodeIds.push(node.id);
+          node = walker.nextNode();
+        }
+
+        return nodeIds;
+      };
+
+      addTest("walk", walk);
+
+      const shadowFirstChild = () => {
+        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+        
+        let node = walker.currentNode;
+        const nodeIds = [ node.id ];
+        
+        node = walker.firstChild();
+        nodeIds.push(node.id);
+
+        return nodeIds;
+      };
+
+      addTest("shadowFirstChild", shadowFirstChild);
+
+      const shadowLastChild = () => {
+        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+        
+        let node = walker.currentNode;
+        const nodeIds = [ node.id ];
+        
+        node = walker.lastChild();
+        nodeIds.push(node.id);
+
+        return nodeIds;
+      };
+
+      addTest("shadowLastChild", shadowLastChild);
+
+      const shadowParentNode = () => {
+        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+        
+        let node = walker.currentNode;
+        const nodeIds = [ node.id ];
+        
+        node = walker.lastChild();
+        nodeIds.push(node.id);
+
+        node = walker.parentNode();
+        nodeIds.push(node.id);
+
+        return nodeIds;
+      };
+
+      addTest("shadowParentNode", shadowParentNode);
+
+      const shadowSiblings = () => {
+        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+        
+        let node = walker.currentNode;
+        const nodeIds = [ node.id ];
+        
+        node = walker.firstChild();
+        nodeIds.push(node.id);
+
+        node = walker.nextSibling();
+        nodeIds.push(node.id);
+        node = walker.nextSibling();
+        nodeIds.push(node.id);
+        node = walker.nextSibling();
+        nodeIds.push(node.id);
+
+        // null
+        node = walker.nextSibling();
+        nodeIds.push(node ? node.id : null);
+
+        node = walker.previousSibling();
+        nodeIds.push(node.id);
+        node = walker.previousSibling();
+        nodeIds.push(node.id);
+        node = walker.previousSibling();
+        nodeIds.push(node.id);
+
+        // null
+        node = walker.previousSibling();
+        nodeIds.push(node ? node.id : null);
+
+        return nodeIds;
+      };
+
+      addTest("shadowSiblings", shadowSiblings);
+
+      const shadowNextPrev = () => {
+        const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+        
+        let node = walker.currentNode;
+        const nodeIds = [];
+        
+        while (node) {
+          nodeIds.push(node.id);
+          node = walker.nextNode();
+        }
+
+        node = walker.previousNode();
+        while (node) {
+          nodeIds.push(node.id);
+          node = walker.previousNode();
+        }
+
+        return nodeIds;
+      };
+
+      addTest("shadowNextPrev", shadowNextPrev);
+
+    </script>
+  </body>
+</html>
