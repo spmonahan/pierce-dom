@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { dfs } from "./utils.js";
+import { dfs, isSlotted } from "./utils.js";
 
 export class SlotTreeWalker implements TreeWalker {
     public readonly filter: NodeFilter | null = null;
@@ -11,7 +11,6 @@ export class SlotTreeWalker implements TreeWalker {
     public readonly whatToShow: number;
   
     private _filterFn: (node: Node) => number;
-    // private _currentNode: Node;
     private _currentIndex: number;
     private _nodes: Node[];
     private _nodesToIndex: Map<Node, number>;
@@ -23,7 +22,7 @@ export class SlotTreeWalker implements TreeWalker {
     ) {
 
       if (typeof (root as HTMLSlotElement).assignedNodes !== 'function') {
-        throw new Error('`root` must be an `HTMLSlotElement');
+        throw new Error('`root` must be an `HTMLSlotElement with slotted nodes.');
       }
 
       this.root = root;
@@ -37,6 +36,7 @@ export class SlotTreeWalker implements TreeWalker {
         this._filterFn = () => NodeFilter.FILTER_ACCEPT;
       }
 
+
       this.whatToShow = whatToShow ?? NodeFilter.SHOW_ALL;
 
       this._nodes = [];
@@ -44,9 +44,9 @@ export class SlotTreeWalker implements TreeWalker {
 
       dfs(root, (node) => {
         if (this._allowed(node)) {
-          const index = this._nodes.length;
-          this._nodes.push(node);
-          this._nodesToIndex.set(node, index);
+            const index = this._nodes.length;
+            this._nodes.push(node);
+            this._nodesToIndex.set(node, index);
         }
         return true;
       })
