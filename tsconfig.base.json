@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "pretty": true,
     "paths": {
-      "@pierce-dom/treewalker": ["packages/treewalker/src/index.ts"]
+      "@pierce-dom/treewalker": ["packages/treewalker/src/index.ts"],
+      "element-contains": ["packages/element-contains/src/index.ts"]
     },
     "typeRoots": ["node_modules/@types", "./typings"]
   },

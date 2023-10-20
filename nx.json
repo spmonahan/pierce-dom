@@ -26,5 +26,9 @@
     "test": {
       "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     }
-  }
+  },
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "packages"
+  },
 }

@@ -1,0 +1,30 @@
+{
+  "name": "element-contains",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/element-contains/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "cwd": "packages/element-contains",
+        "commands": [
+          { "command": "swc src --out-dir=lib --config module.type=es6" }
+        ],
+        "parallel": false
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/element-contains/**/*.ts",
+          "packages/element-contains/package.json"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
