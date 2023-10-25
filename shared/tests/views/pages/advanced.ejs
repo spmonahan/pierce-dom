@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Advanced shadow DOM test</title>
+
+    <%- include('../partials/importmap'); %>
+    <%- include('../partials/webcomponents'); %>
+  </head>
+
+  <body id="body">
+    <div id="test-root">
+      <div id="first">
+        First
+        <div id="first-child">
+            First child
+            <basic-component id="first-grand-child-one">first grand child one</basic-component>
+            <div id="first-grand-child-two">First grand child two</div>
+        </div>
+      </div>
+
+      <basic-component id="second"></basic-component>
+
+      <default-slot-component id="third">
+        <default-slot-component id="third-child">
+            <div id="third-child-slotted">Third child slotted</div>
+        </default-slot-component>
+      </default-slot-component>
+
+      <div id="fourth">
+        Fourth
+        <default-slot-component id="fourth-child">
+            <named-slots-component id="fourth-grand-child-one">
+                <div id="fourth-grand-child-one-second-slot" slot="second-slot">Fourth grand child second slot</div>
+                <div id="fourth-grand-child-one-third-slot" slot="third-slot">Fourth grand child third slot</div>
+                <basic-component id="fourth-grand-child-one-first-slot" slot="first-slot"></basic-component>
+            </named-slots-component>
+        </default-slot-component>
+      </div>
+    </div>
+
+    <%- include(`../partials/${packageUnderTest}/advanced-js`); %>
+
+  </body>
+</html>

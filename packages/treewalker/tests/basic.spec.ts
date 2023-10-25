@@ -1,16 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { execTest } from './execTest';
 
 const BASIC_TEST_PAGE = 'http://localhost:3000/pages/basic.html';
-
-const execTest = async <T>(page, testName: string): T => {
-
-  const result = await page.evaluate((testName: string) => {
-    return window.__pierce_dom__.ShadowDomTreeWalker[testName]();
-  }, testName);
-
-  return result as T;
-
-};
 
 test.describe('basic custom element', () => {
   test('simple walk', async ({ page }) => {

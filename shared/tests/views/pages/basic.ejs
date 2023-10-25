@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Basic shadow DOM test</title>
+
+    <%- include('../partials/importmap'); %>
+    <%- include('../partials/webcomponents'); %>
+  </head>
+
+  <body id="body">
+    <div id="test-root">
+      <div id="first">First</div>
+      <basic-component id="second"></basic-component>
+      <div id="last">Last</div>
+    </div>
+
+    <%- include(`../partials/${packageUnderTest}/basic-js`); %>
+
+  </body>
+</html>

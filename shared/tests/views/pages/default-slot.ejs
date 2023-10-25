@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Default slot shadow DOM test</title>
+
+    <%- include('../partials/importmap'); %>
+    <%- include('../partials/webcomponents'); %>
+  </head>
+
+  <body id="body">
+    <div id="test-root">
+      <div id="first">First</div>
+      <default-slot-component id="second">
+        <div id="slotted">Slotted</div>
+      </default-slot-component>
+      <div id="last">Last</div>
+    </div>
+
+    <%- include(`../partials/${packageUnderTest}/default-slot-js`); %>
+
+  </body>
+</html>

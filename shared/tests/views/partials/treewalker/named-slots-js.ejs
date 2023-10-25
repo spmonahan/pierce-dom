@@ -1,0 +1,133 @@
+<script type="module" id="test-script">
+    import { ShadowDomTreeWalker } from '@pierce-dom/treewalker';
+    import { addTest } from "/js/utils.js";
+
+    const adder = addTest('ShadowDomTreeWalker');
+
+    const walk = () => {
+    const walker = new ShadowDomTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    
+    let node = walker.currentNode;
+    const nodeIds = [];
+    while (node) {
+        nodeIds.push(node.id);
+        node = walker.nextNode();
+    }
+
+    return nodeIds;
+    };
+
+    adder("walk", walk);
+
+    const shadowFirstChild = () => {
+    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+    
+    let node = walker.currentNode;
+    const nodeIds = [ node.id ];
+    
+    node = walker.firstChild();
+    nodeIds.push(node.id);
+
+    return nodeIds;
+    };
+
+    adder("shadowFirstChild", shadowFirstChild);
+
+    const shadowLastChild = () => {
+    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+    
+    let node = walker.currentNode;
+    const nodeIds = [ node.id ];
+    
+    node = walker.lastChild();
+    nodeIds.push(node.id);
+
+    return nodeIds;
+    };
+
+    adder("shadowLastChild", shadowLastChild);
+
+    const shadowParentNode = () => {
+    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+    
+    let node = walker.currentNode;
+    const nodeIds = [ node.id ];
+    
+    node = walker.lastChild();
+    nodeIds.push(node.id);
+
+    node = walker.parentNode();
+    nodeIds.push(node.id);
+
+    return nodeIds;
+    };
+
+    adder("shadowParentNode", shadowParentNode);
+
+    const shadowSiblings = () => {
+    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+    
+    let node = walker.currentNode;
+    const nodeIds = [ node.id ];
+    
+    node = walker.firstChild();
+    nodeIds.push(node.id);
+
+    node = walker.nextSibling();
+    nodeIds.push(node.id);
+    node = walker.nextSibling();
+    nodeIds.push(node.id);
+    node = walker.nextSibling();
+    nodeIds.push(node.id);
+    node = walker.nextSibling();
+    nodeIds.push(node.id);
+    node = walker.nextSibling();
+    nodeIds.push(node.id);
+
+    // null
+    node = walker.nextSibling();
+    nodeIds.push(node ? node.id : null);
+
+    node = walker.previousSibling();
+    nodeIds.push(node.id);
+    node = walker.previousSibling();
+    nodeIds.push(node.id);
+    node = walker.previousSibling();
+    nodeIds.push(node.id);
+    node = walker.previousSibling();
+    nodeIds.push(node.id);
+    node = walker.previousSibling();
+    nodeIds.push(node.id);
+
+    // null
+    node = walker.previousSibling();
+    nodeIds.push(node ? node.id : null);
+
+    return nodeIds;
+    };
+
+    adder("shadowSiblings", shadowSiblings);
+
+    const shadowNextPrev = () => {
+    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
+    
+    let node = walker.currentNode;
+    const nodeIds = [];
+    
+    while (node) {
+        nodeIds.push(node.id);
+        node = walker.nextNode();
+    }
+
+    node = walker.previousNode();
+    while (node) {
+        nodeIds.push(node.id);
+        node = walker.previousNode();
+    }
+
+    return nodeIds;
+    };
+
+    adder("shadowNextPrev", shadowNextPrev);
+
+</script>

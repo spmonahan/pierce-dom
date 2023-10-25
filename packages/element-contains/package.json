@@ -14,7 +14,8 @@
   },
   "scripts": {
     "test": "playwright test",
-    "test:server": "node ./tests/test-server.js"
+    "test:ui": "playwright test --ui",
+    "test:server": "node ../../shared/tests/test-server.mjs element-contains"
   },
   "exports": {
     ".": {

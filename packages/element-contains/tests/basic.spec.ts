@@ -1,20 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { execTest, genResult } from './execTest';
 
 const BASIC_TEST_PAGE = 'http://localhost:3000/pages/basic.html';
-
-const execTest = async <T>(page, testName: string): T => {
-
-  const result = await page.evaluate((testName: string) => {
-    return window.__pierce_dom__.elementContains[testName]();
-  }, testName);
-
-  return result as T;
-
-};
-
-const genResult = (num, value) => {
-  return new Array(num).fill(value);
-}
 
 
 test.describe('basic custom element', () => {

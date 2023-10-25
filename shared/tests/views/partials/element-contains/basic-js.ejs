@@ -1,0 +1,91 @@
+<script type="module" id="test-script">
+    import { elementContains } from '@pierce-dom/element-contains';
+    import { addTest } from "/js/utils.js";
+
+    const adder = addTest('elementContains');
+
+    const body = document.getElementById("body");
+    const testRoot = document.getElementById("test-root");
+    const first = document.getElementById("first");
+    const second = document.getElementById("second");
+    const last = document.getElementById("last");
+
+    const basicFirstChild = second.shadowRoot.getElementById("basic-first-child");
+    const basicSecondChild = second.shadowRoot.getElementById("basic-second-child");
+    const basicLastChild = second.shadowRoot.getElementById("basic-last-child");
+
+    const lightDomContains = () => {
+    
+    return [
+        elementContains(body, testRoot),
+        elementContains(body, first),
+        elementContains(body, second),
+        elementContains(body, last),
+
+        elementContains(testRoot, first),
+        elementContains(testRoot, second),
+        elementContains(testRoot, last),
+
+        elementContains(body, body),
+        elementContains(testRoot, testRoot),
+        elementContains(first, first),
+        elementContains(second, second),
+    ];
+    };
+
+    adder("lightDomContains", lightDomContains);
+
+    const lightDomNotContains = () => {
+    
+    return [
+        elementContains(testRoot, body),
+        
+        elementContains(first, body),
+        elementContains(second, body),
+
+        elementContains(first, testRoot),
+        elementContains(second, testRoot),
+
+        elementContains(null, first),
+        elementContains(undefined, second),
+
+        elementContains(body, null),
+        elementContains(testRoot, undefined),
+    ];
+    };
+
+    adder("lightDomNotContains", lightDomNotContains);
+
+    const shadowDomContains = () => {
+    
+    return [
+        elementContains(body, basicFirstChild),
+        elementContains(testRoot, basicSecondChild),
+
+        elementContains(second, basicFirstChild),
+        elementContains(second, basicSecondChild),
+        elementContains(second, basicLastChild),
+
+        elementContains(basicFirstChild, basicFirstChild),
+        elementContains(basicSecondChild, basicSecondChild),
+        elementContains(basicLastChild, basicLastChild),
+    ];
+    };
+
+    adder('shadowDomContains', shadowDomContains);
+
+    const shadowDomNotContains = () => {
+
+    return [
+        elementContains(basicFirstChild, body),
+        elementContains(basicSecondChild, testRoot),
+
+        elementContains(basicFirstChild, second),
+        elementContains(basicSecondChild, second),
+        elementContains(basicLastChild, second),
+    ]
+    };
+
+    adder('shadowDomNotContains', shadowDomNotContains);
+
+</script>

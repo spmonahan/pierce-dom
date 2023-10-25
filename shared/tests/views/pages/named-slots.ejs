@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Named slots shadow DOM test</title>
+
+    <%- include('../partials/importmap'); %>
+    <%- include('../partials/webcomponents'); %>
+  </head>
+
+  <body id="body">
+    <div id="test-root">
+      <div id="first">First</div>
+      <named-slots-component id="second">
+        <div id="second-slotted" slot="second-slot">Second slotted</div>
+        <div id="first-slotted" slot="first-slot">First slotted</div>
+      </named-slots-component>
+      <div id="last">Last</div>
+    </div>
+
+    <%- include(`../partials/${packageUnderTest}/named-slots-js`); %>
+
+  </body>
+</html>

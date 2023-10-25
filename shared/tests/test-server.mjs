@@ -6,7 +6,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));;
-
+const packageUnderTest = process.argv[2];
 
 let server;
 const port = 3000;
@@ -28,7 +28,15 @@ const handleGracefulShutdown = arg => {
 const startServer = (g) => {
     const app = express();
 
-    app.use("/src", express.static(join(__dirname, "..", "lib")));
+    // Use EJS templates
+    app.set("views", join(__dirname, "views"));
+    app.set("view engine", "ejs");
+
+    app.get("/pages/:page.html", (req, res) => {
+      res.render(`pages/${req.params.page}`, { packageUnderTest });
+    });
+
+    app.use("/packages", express.static(join(__dirname, "..", "..", "packages")));
     app.use("/pages", express.static(join(__dirname, "pages")));
     app.use("/webcomponents", express.static(join(__dirname, "webcomponents")));
     app.use("/js", express.static(join(__dirname, "js")));
