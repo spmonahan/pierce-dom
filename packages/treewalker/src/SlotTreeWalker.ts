@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { dfs, isSlotted } from "./utils.js";
+import { dfs } from "./utils.js";
 
 export class SlotTreeWalker implements TreeWalker {
     public readonly filter: NodeFilter | null = null;
@@ -56,6 +56,15 @@ export class SlotTreeWalker implements TreeWalker {
 
     public get currentNode(): Node {
       return this._currentIndex < 0 ? this.root : this._nodes[this._currentIndex];
+    }
+
+    public set currentNode(node: Node) {
+      const index = this._nodesToIndex.get(node);
+      if (index === undefined) {
+        throw new Error('Node not found in tree.');
+      }
+
+      this._currentIndex = index;
     }
   
     public firstChild(): Node | null {

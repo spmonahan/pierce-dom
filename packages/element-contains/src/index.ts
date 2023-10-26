@@ -15,7 +15,7 @@ export function elementContains(
     
         if (typeof (node as HTMLSlotElement).assignedElements !== 'function' && (node as HTMLElement).assignedSlot?.parentNode) {
             // Element is slotted
-            node = (node as HTMLElement).assignedSlot?.parentNode;
+            node = (node as HTMLElement).assignedSlot;
         } else if (node.parentNode?.nodeType === 11) { // DOCUMENT_FRAGMENT
             // Element is in shadow root
             node = (node.parentNode as ShadowRoot).host;

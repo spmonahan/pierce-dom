@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { createTreeWalker, hasShadowRoot, hasSlottedChildren, maybeHandleShadowRootOrSlot } from "./utils.js";
+import { hasShadowRoot, hasSlottedChildren, maybeHandleShadowRootOrSlot } from "./utils.js";
 import type { TreeWalkerWithType } from "./types.js";
 import { SlotTreeWalker } from "./SlotTreeWalker.js";
 
@@ -35,6 +35,10 @@ export class ShadowDomTreeWalker implements TreeWalker {
 
   public get currentNode(): Node {
     return this._currentWalker.currentNode;
+  }
+
+  public set currentNode(node: Node) {
+    this._currentWalker.currentNode = node;
   }
 
   public firstChild(): Node | null {
