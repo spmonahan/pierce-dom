@@ -1,124 +1,190 @@
 <script type="module" id="test-script">
-    import { ShadowDomTreeWalker } from '@pierce-dom/treewalker';
+    import { elementContains } from '@pierce-dom/element-contains';
     import { addTest } from "/js/utils.js";
 
-    const adder = addTest('ShadowDomTreeWalker');
+    const adder = addTest('elementContains');
 
-    const walk = () => {
-    const walker = new ShadowDomTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    const body = document.getElementById("body");
+    const testRoot = document.getElementById("test-root");
     
-    let node = walker.currentNode;
-    const nodeIds = [];
-    while (node) {
-        nodeIds.push(node.id);
-        node = walker.nextNode();
-    }
+    const first = document.getElementById("first");
+    const firstChild = document.getElementById("first-child");
+    const firstGrandChildOne = document.getElementById("first-grand-child-one");
+    const firstGrandChildOneFirstChild = firstGrandChildOne.shadowRoot.getElementById("basic-first-child");
+    const firstGrandChildOneSecondChild = firstGrandChildOne.shadowRoot.getElementById("basic-second-child");
+    const firstGrandChildOneLastChild = firstGrandChildOne.shadowRoot.getElementById("basic-last-child");
 
-    return nodeIds;
+    const firstGrandChildTwo = document.getElementById("first-grand-child-two");
+
+    const second = document.getElementById("second");
+    
+    const third = document.getElementById("third");
+    const thirdFirstChild = third.shadowRoot.getElementById("default-slot-first-child");
+    const thirdSecondChild = third.shadowRoot.getElementById("default-slot-second-child");
+    const thirdLastChild = third.shadowRoot.getElementById("default-slot-last-child");
+
+    const thirdChild = document.getElementById("third-child");
+    const thirdChildSlot = thirdChild.shadowRoot.getElementById("slot");
+
+    const thirdChildSlotted = document.getElementById("third-child-slotted");
+    const thirdChildSlottedFirstChild = thirdChild.shadowRoot.getElementById("default-slot-first-child");
+    const thirdChildSlottedSecondChild = thirdChild.shadowRoot.getElementById("default-slot-second-child");
+    const thirdChildSlottedLastChild = thirdChild.shadowRoot.getElementById("default-slot-last-child");
+    const thirdChildSlottedSlot = thirdChild.shadowRoot.getElementById("slot");
+
+    const fourth = document.getElementById("fourth");
+    const fourthChild = document.getElementById("fourth-child");
+    const fourthGrandChildOne = document.getElementById("fourth-grand-child-one");
+    const fourthGrandChildOneFirstSlot = fourthGrandChildOne.shadowRoot.getElementById("first-slot");
+    const fourthGrandChildOneSecondSlot = fourthGrandChildOne.shadowRoot.getElementById("second-slot");
+    const fourthGrandChildOneThirdSlot = fourthGrandChildOne.shadowRoot.getElementById("third-slot");
+
+    const fourthGrandChildOneFirstSlotted = document.getElementById("fourth-grand-child-one-first-slot");
+    const fourthGrandChildOneSecondSlotted = document.getElementById("fourth-grand-child-one-second-slot");
+    const fourthGrandChildOneThirdSlotted = document.getElementById("fourth-grand-child-one-third-slot");
+
+    
+    const lightDomContains = () => {
+        return [
+            elementContains(body, firstChild),
+            elementContains(first, firstChild),
+            elementContains(testRoot, firstGrandChildOne),
+            elementContains(body, firstGrandChildTwo),
+
+            elementContains(body, second),
+
+            elementContains(body, thirdChild),
+            elementContains(testRoot, thirdChild),
+            elementContains(third, thirdChildSlotted),
+            elementContains(testRoot, thirdChildSlotted),
+            elementContains(thirdChild, thirdChildSlotted),
+
+            elementContains(testRoot, fourth),
+            elementContains(testRoot, fourthChild),
+            elementContains(body, fourthGrandChildOne),
+            elementContains(body, fourthGrandChildOneFirstSlotted),
+            elementContains(body, fourthGrandChildOneSecondSlotted),
+            elementContains(body, fourthGrandChildOneThirdSlotted),
+
+            elementContains(firstChild, firstChild),
+            elementContains(firstGrandChildOne, firstGrandChildOne),
+            elementContains(firstGrandChildTwo, firstGrandChildTwo),
+            elementContains(thirdChildSlotted, thirdChildSlotted),
+            elementContains(fourthGrandChildOne, fourthGrandChildOne),
+
+        ];
     };
 
-    adder("walk", walk);
+    adder("lightDomContains", lightDomContains);
 
-    const shadowFirstChild = () => {
-    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-    
-    let node = walker.currentNode;
-    const nodeIds = [ node.id ];
-    
-    node = walker.firstChild();
-    nodeIds.push(node.id);
+    const lightDomNotContains = () => {
+        return [
+            elementContains(firstChild, body),
+            elementContains(firstChild, first),
+            elementContains(firstGrandChildOne, testRoot),
+            elementContains(firstGrandChildTwo, body),
 
-    return nodeIds;
+            elementContains(second, body),
+
+            elementContains(thirdChild, body),
+            elementContains(thirdChild, testRoot),
+            elementContains(thirdChildSlotted, third),
+            elementContains(thirdChildSlotted, testRoot),
+            elementContains(thirdChildSlotted, thirdChild),
+
+            elementContains(fourth, testRoot),
+            elementContains(fourthChild, testRoot),
+            elementContains(fourthGrandChildOne, body),
+            elementContains(fourthGrandChildOneFirstSlotted, body),
+            elementContains(fourthGrandChildOneSecondSlotted, body),
+            elementContains(fourthGrandChildOneThirdSlotted, body),
+        ]
     };
 
-    adder("shadowFirstChild", shadowFirstChild);
+    adder("lightDomNotContains", lightDomNotContains);
 
-    const shadowLastChild = () => {
-    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-    
-    let node = walker.currentNode;
-    const nodeIds = [ node.id ];
-    
-    node = walker.lastChild();
-    nodeIds.push(node.id);
+window.elementContains = elementContains;
+    const shadowDomContains = () => {
+        return [
+            elementContains(body, firstGrandChildOneFirstChild),
+            elementContains(body, firstGrandChildOneSecondChild),
+            elementContains(body, firstGrandChildOneLastChild),
+            elementContains(body, thirdChildSlottedSlot),
 
-    return nodeIds;
+            elementContains(testRoot, thirdFirstChild),
+            elementContains(testRoot, thirdSecondChild),
+            elementContains(testRoot, thirdLastChild),
+            elementContains(testRoot, thirdChildSlot),
+            elementContains(testRoot, thirdChildSlottedSlot),
+            
+            elementContains(third, thirdChildSlotted),
+            elementContains(third, thirdChildSlottedFirstChild),
+            elementContains(third, thirdChildSlottedSecondChild),
+            elementContains(third, thirdChildSlottedLastChild),
+            elementContains(third, thirdChildSlottedSlot),
+
+            elementContains(thirdChild, thirdChildSlotted),
+            elementContains(thirdChild, thirdChildSlottedFirstChild),
+            elementContains(thirdChild, thirdChildSlottedSecondChild),
+            elementContains(thirdChild, thirdChildSlottedLastChild),
+            elementContains(thirdChild, thirdChildSlottedSlot),
+
+            elementContains(body, thirdChildSlotted),
+            elementContains(body, thirdChildSlottedFirstChild),
+            elementContains(body, thirdChildSlottedSecondChild),
+            elementContains(body, thirdChildSlottedLastChild),
+            elementContains(body, thirdChildSlottedSlot),
+
+            elementContains(fourth, fourthGrandChildOneFirstSlot),
+            elementContains(fourth, fourthGrandChildOneSecondSlot),
+            elementContains(fourth, fourthGrandChildOneThirdSlot),
+
+            elementContains(fourthGrandChildOneFirstSlot, fourthGrandChildOneFirstSlotted),
+            elementContains(fourthGrandChildOneSecondSlot, fourthGrandChildOneSecondSlotted),
+            elementContains(fourthGrandChildOneThirdSlot, fourthGrandChildOneThirdSlotted),
+
+        ];
     };
 
-    adder("shadowLastChild", shadowLastChild);
+    adder("shadowDomContains", shadowDomContains);
 
-    const shadowParentNode = () => {
-    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-    
-    let node = walker.currentNode;
-    const nodeIds = [ node.id ];
-    
-    node = walker.lastChild();
-    nodeIds.push(node.id);
+    const shadowDomNotContains = () => {
+        return [
+            elementContains(firstGrandChildOneFirstChild, body),
+            elementContains(firstGrandChildOneSecondChild, body),
+            elementContains(firstGrandChildOneLastChild, body),
+            elementContains(thirdChildSlottedSlot, body),
 
-    node = walker.parentNode();
-    nodeIds.push(node.id);
+            elementContains(thirdFirstChild, testRoot),
+            elementContains(thirdSecondChild, testRoot),
+            elementContains(thirdLastChild, testRoot),
+            elementContains(thirdChildSlot, testRoot),
+            elementContains(thirdChildSlottedSlot, testRoot),
+            
+            elementContains(thirdChildSlotted, third),
+            elementContains(thirdChildSlottedFirstChild, third),
+            elementContains(thirdChildSlottedSecondChild, third),
+            elementContains(thirdChildSlottedLastChild, third),
+            elementContains(thirdChildSlottedSlot, third),
 
-    return nodeIds;
+            elementContains(thirdChildSlotted, thirdChild),
+            elementContains(thirdChildSlottedFirstChild, thirdChild),
+            elementContains(thirdChildSlottedSecondChild, thirdChild),
+            elementContains(thirdChildSlottedLastChild, thirdChild),
+            elementContains(thirdChildSlottedSlot, thirdChild),
+
+            elementContains(thirdChildSlotted, body),
+            elementContains(thirdChildSlottedFirstChild, body),
+            elementContains(thirdChildSlottedSecondChild, body),
+            elementContains(thirdChildSlottedLastChild, body),
+            elementContains(thirdChildSlottedSlot, body),
+
+            elementContains(fourthGrandChildOneSecondSlot, fourth),
+            elementContains(fourthGrandChildOneThirdSlot, fourth),
+            elementContains(fourthGrandChildOneFirstSlot, fourth),
+        ];
     };
 
-    adder("shadowParentNode", shadowParentNode);
-
-    const shadowSiblings = () => {
-    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-    
-    let node = walker.currentNode;
-    const nodeIds = [ node.id ];
-    
-    node = walker.firstChild();
-    nodeIds.push(node.id);
-
-    node = walker.nextSibling();
-    nodeIds.push(node.id);
-    node = walker.nextSibling();
-    nodeIds.push(node.id);
-
-    // null
-    node = walker.nextSibling();
-    nodeIds.push(node ? node.id : null);
-
-    node = walker.previousSibling();
-    nodeIds.push(node.id);
-    node = walker.previousSibling();
-    nodeIds.push(node.id);
-
-    // null
-    node = walker.previousSibling();
-    nodeIds.push(node ? node.id : null);
-
-    return nodeIds;
-    };
-
-    adder("shadowSiblings", shadowSiblings);
-
-    const shadowNextPrev = () => {
-    const walker = new ShadowDomTreeWalker(document.getElementById("second"), NodeFilter.SHOW_ELEMENT);
-    
-    let node = walker.currentNode;
-    const nodeIds = [];
-    
-    while (node) {
-        nodeIds.push(node.id);
-        node = walker.nextNode();
-    }
-
-    console.log('nodeIds', nodeIds);
-    console.log('node?', walker.currentNode);
-
-    node = walker.previousNode();
-    while (node) {
-        nodeIds.push(node.id);
-        node = walker.previousNode();
-    }
-
-    return nodeIds;
-    };
-
-    adder("shadowNextPrev", shadowNextPrev);
+    adder("shadowDomNotContains", shadowDomNotContains);
 
 </script>
