@@ -1,0 +1,97 @@
+<script type="module" id="test-script">
+    import { elementContains } from '@pierce-dom/element-contains';
+    import { addTest } from "/js/utils.js";
+
+    const adder = addTest('elementContains');
+
+    const body = document.getElementById("body");
+    const testRoot = document.getElementById("test-root");
+    const first = document.getElementById("first");
+    const second = document.getElementById("second");
+    const last = document.getElementById("last");
+
+    const namedSlotFirstChild = second.shadowRoot.getElementById("named-slots-first-child");
+    const namedSlotSecondChild = second.shadowRoot.getElementById("named-slots-second-child");
+    const namedSlotLastChild = second.shadowRoot.getElementById("named-slots-last-child");
+    const firstSlot = second.shadowRoot.getElementById("first-slot");
+    const secondSlot = second.shadowRoot.getElementById("second-slot");
+
+    const firstSlotted = document.getElementById("first-slotted");
+    const secondSlotted = document.getElementById("second-slotted");
+
+    const lightDomContains = () => {
+        return [
+            elementContains(body, testRoot),
+
+            elementContains(body, second),
+            elementContains(body, firstSlotted),
+            elementContains(body, secondSlotted),
+
+            elementContains(testRoot, second),
+            elementContains(testRoot, firstSlotted),
+            elementContains(testRoot, secondSlotted),
+
+            elementContains(firstSlotted, firstSlotted),
+            elementContains(secondSlotted, secondSlotted),
+        ]
+    };
+
+    adder("lightDomContains", lightDomContains);
+
+    const lightDomNotContains = () => {
+        return [
+            elementContains(testRoot, body),
+
+            elementContains(second, testRoot),
+            elementContains(firstSlotted, testRoot),
+            elementContains(secondSlotted, body),
+        ]
+    };
+
+    adder("lightDomNotContains", lightDomNotContains);
+
+    const shadowDomContains = () => {
+        return [
+            elementContains(second, firstSlotted),
+            elementContains(second, secondSlotted),
+
+            elementContains(second, namedSlotFirstChild),
+            elementContains(second, namedSlotSecondChild),
+            elementContains(second, namedSlotLastChild),
+
+            elementContains(second, firstSlot),
+            elementContains(second, secondSlot),
+
+            elementContains(firstSlot, firstSlotted),
+            elementContains(secondSlot, secondSlotted),
+
+            elementContains(testRoot, namedSlotFirstChild),
+            elementContains(testRoot, namedSlotSecondChild),
+            elementContains(testRoot, namedSlotLastChild),
+
+            elementContains(body, firstSlot),
+            elementContains(body, secondSlot),
+        ]
+    };
+
+    adder("shadowDomContains", shadowDomContains);
+
+    const shadowDomNotContains = () => {
+        return [
+            elementContains(namedSlotFirstChild, second),
+            elementContains(namedSlotSecondChild, second),
+            elementContains(namedSlotLastChild, second),
+            elementContains(firstSlot, second),
+            elementContains(secondSlot, second),
+
+            elementContains(firstSlotted, second),
+            elementContains(secondSlotted, second),
+
+            elementContains(firstSlotted, firstSlot),
+            elementContains(secondSlotted, secondSlot),
+        ];
+    };
+
+    adder("shadowDomNotContains", shadowDomNotContains);
+
+</script>
