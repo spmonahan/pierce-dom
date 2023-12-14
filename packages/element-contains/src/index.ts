@@ -1,3 +1,8 @@
+/*!
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
+
 // Node.elementContains with shadow DOM support!
 export function elementContains(
     element: HTMLElement | Node | null | undefined, 
