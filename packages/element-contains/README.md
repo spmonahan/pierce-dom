@@ -1,6 +1,6 @@
-# element-contains
+# @pierce-dom/element-contains
 
-This library was generated with [Nx](https://nx.dev).
+A shadow DOM-aware implement of `Node.contains()`.
 
 ## Building
 

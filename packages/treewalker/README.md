@@ -1,6 +1,6 @@
-# packages/treewalker
+# @pierce-dom/treewalker
 
-This library was generated with [Nx](https://nx.dev).
+A `TreeWalker` implementation that walks into open shadow roots.
 
 ## Building
 
